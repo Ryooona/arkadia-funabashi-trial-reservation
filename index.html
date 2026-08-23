@@ -10,6 +10,9 @@
 
   <title>Arkadia船橋店 ポーカー体験会 お申し込み</title>
 
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
   <style>
     :root {
       --green: #06c755;
@@ -213,7 +216,6 @@
         <input
           type="text"
           id="representativeName"
-          autocomplete="name"
           required
         >
       </div>
@@ -253,11 +255,7 @@
             required
           >
 
-          <select
-            id="firstHour"
-            aria-label="第1希望 時"
-            required
-          >
+          <select id="firstHour" aria-label="第1希望 時" required>
             <option value="">時</option>
             <option value="17">17時</option>
             <option value="18">18時</option>
@@ -266,11 +264,7 @@
             <option value="21">21時</option>
           </select>
 
-          <select
-            id="firstMinute"
-            aria-label="第1希望 分"
-            required
-          >
+          <select id="firstMinute" aria-label="第1希望 分" required>
             <option value="">分</option>
             <option value="00">00分</option>
             <option value="15">15分</option>
@@ -294,11 +288,7 @@
             required
           >
 
-          <select
-            id="secondHour"
-            aria-label="第2希望 時"
-            required
-          >
+          <select id="secondHour" aria-label="第2希望 時" required>
             <option value="">時</option>
             <option value="17">17時</option>
             <option value="18">18時</option>
@@ -307,11 +297,7 @@
             <option value="21">21時</option>
           </select>
 
-          <select
-            id="secondMinute"
-            aria-label="第2希望 分"
-            required
-          >
+          <select id="secondMinute" aria-label="第2希望 分" required>
             <option value="">分</option>
             <option value="00">00分</option>
             <option value="15">15分</option>
@@ -335,11 +321,7 @@
             required
           >
 
-          <select
-            id="thirdHour"
-            aria-label="第3希望 時"
-            required
-          >
+          <select id="thirdHour" aria-label="第3希望 時" required>
             <option value="">時</option>
             <option value="17">17時</option>
             <option value="18">18時</option>
@@ -348,21 +330,13 @@
             <option value="21">21時</option>
           </select>
 
-          <select
-            id="thirdMinute"
-            aria-label="第3希望 分"
-            required
-          >
+          <select id="thirdMinute" aria-label="第3希望 分" required>
             <option value="">分</option>
             <option value="00">00分</option>
             <option value="15">15分</option>
             <option value="30">30分</option>
             <option value="45">45分</option>
           </select>
-        </div>
-
-        <div class="hint">
-          ご希望の日時を第3希望までご入力ください。
         </div>
       </div>
 
@@ -381,8 +355,9 @@
       <button
         type="submit"
         id="submitButton"
+        disabled
       >
-        申し込む
+        読み込み中...
       </button>
 
       <div
@@ -397,8 +372,13 @@
   </main>
 
   <script>
+    const LIFF_ID = '2011216818-LyOXLWar';
+
     const GAS_URL =
       'https://script.google.com/macros/s/AKfycby1GxM5KK4NwQWnu1sGrEf2EQV5_BI3M0-KYo2K22po29tZJh0sJP_MZEiR5GAe1qy5/exec';
+
+    let lineUserId = '';
+    let lineDisplayName = '';
 
     const form =
       document.getElementById('reservationForm');
@@ -411,36 +391,87 @@
 
 
     // ----------------------------------
-    // 今日より前の日付を選択できないようにする
+    // LIFF初期化
+    // ----------------------------------
+
+    async function initializeLiff() {
+      try {
+        await liff.init({
+          liffId: LIFF_ID
+        });
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile =
+          await liff.getProfile();
+
+        lineUserId =
+          profile.userId || '';
+
+        lineDisplayName =
+          profile.displayName || '';
+
+        submitButton.disabled = false;
+        submitButton.textContent = '申し込む';
+
+      } catch (error) {
+        console.error(
+          'LIFF initialization failed:',
+          error
+        );
+
+        showMessage(
+          'error',
+          'LINEとの接続に失敗しました。LINEからもう一度開いてください。'
+        );
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'LINE接続エラー';
+      }
+    }
+
+
+    // ----------------------------------
+    // 今日より前の日付を選択不可
     // ----------------------------------
 
     function getTodayString() {
       const now = new Date();
 
-      const year = now.getFullYear();
+      const year =
+        now.getFullYear();
 
       const month =
-        String(now.getMonth() + 1).padStart(2, '0');
+        String(
+          now.getMonth() + 1
+        ).padStart(2, '0');
 
       const day =
-        String(now.getDate()).padStart(2, '0');
+        String(
+          now.getDate()
+        ).padStart(2, '0');
 
       return `${year}-${month}-${day}`;
     }
 
-    const todayString = getTodayString();
+    const todayString =
+      getTodayString();
 
     [
       'firstDate',
       'secondDate',
       'thirdDate'
     ].forEach(function(id) {
-      document.getElementById(id).min = todayString;
+      document.getElementById(id).min =
+        todayString;
     });
 
 
     // ----------------------------------
-    // 曜日付きの日時に変換
+    // 曜日付き日時
     // ----------------------------------
 
     function formatDateTime(
@@ -449,14 +480,20 @@
       minuteValue
     ) {
       const parts =
-        dateValue.split('-').map(Number);
+        dateValue
+          .split('-')
+          .map(Number);
 
       const year = parts[0];
       const month = parts[1];
       const day = parts[2];
 
       const date =
-        new Date(year, month - 1, day);
+        new Date(
+          year,
+          month - 1,
+          day
+        );
 
       const weekdays = [
         '日',
@@ -489,7 +526,10 @@
     // メッセージ表示
     // ----------------------------------
 
-    function showMessage(type, text) {
+    function showMessage(
+      type,
+      text
+    ) {
       message.className =
         'message ' + type;
 
@@ -499,7 +539,7 @@
 
 
     // ----------------------------------
-    // フォーム送信
+    // 送信
     // ----------------------------------
 
     form.addEventListener(
@@ -508,103 +548,66 @@
 
         event.preventDefault();
 
-        message.className = 'message';
-        message.textContent = '';
+        if (!lineUserId) {
+          showMessage(
+            'error',
+            'LINEユーザー情報を取得できませんでした。LINEからもう一度開いてください。'
+          );
 
-        const representativeName =
-          document
-            .getElementById('representativeName')
-            .value
-            .trim();
+          return;
+        }
 
-        const guestCount =
-          document
-            .getElementById('guestCount')
-            .value;
+        message.className =
+          'message';
 
-        const firstDate =
-          document
-            .getElementById('firstDate')
-            .value;
-
-        const firstHour =
-          document
-            .getElementById('firstHour')
-            .value;
-
-        const firstMinute =
-          document
-            .getElementById('firstMinute')
-            .value;
-
-        const secondDate =
-          document
-            .getElementById('secondDate')
-            .value;
-
-        const secondHour =
-          document
-            .getElementById('secondHour')
-            .value;
-
-        const secondMinute =
-          document
-            .getElementById('secondMinute')
-            .value;
-
-        const thirdDate =
-          document
-            .getElementById('thirdDate')
-            .value;
-
-        const thirdHour =
-          document
-            .getElementById('thirdHour')
-            .value;
-
-        const thirdMinute =
-          document
-            .getElementById('thirdMinute')
-            .value;
-
-        const note =
-          document
-            .getElementById('note')
-            .value
-            .trim();
-
+        message.textContent =
+          '';
 
         const data = {
-          representativeName: representativeName,
 
-          guestCount: guestCount,
+          representativeName:
+            document
+              .getElementById('representativeName')
+              .value
+              .trim(),
+
+          guestCount:
+            document
+              .getElementById('guestCount')
+              .value,
 
           firstDateTime:
             formatDateTime(
-              firstDate,
-              firstHour,
-              firstMinute
+              document.getElementById('firstDate').value,
+              document.getElementById('firstHour').value,
+              document.getElementById('firstMinute').value
             ),
 
           secondDateTime:
             formatDateTime(
-              secondDate,
-              secondHour,
-              secondMinute
+              document.getElementById('secondDate').value,
+              document.getElementById('secondHour').value,
+              document.getElementById('secondMinute').value
             ),
 
           thirdDateTime:
             formatDateTime(
-              thirdDate,
-              thirdHour,
-              thirdMinute
+              document.getElementById('thirdDate').value,
+              document.getElementById('thirdHour').value,
+              document.getElementById('thirdMinute').value
             ),
 
-          note: note,
+          note:
+            document
+              .getElementById('note')
+              .value
+              .trim(),
 
-          // LIFF連携時に自動取得する
-          lineUserId: '',
-          lineDisplayName: ''
+          lineUserId:
+            lineUserId,
+
+          lineDisplayName:
+            lineDisplayName
         };
 
 
@@ -648,7 +651,6 @@
             'お申し込みを受け付けました。'
           );
 
-
           form.reset();
 
 
@@ -670,6 +672,13 @@
         }
       }
     );
+
+
+    // ----------------------------------
+    // 起動
+    // ----------------------------------
+
+    initializeLiff();
   </script>
 
 </body>
