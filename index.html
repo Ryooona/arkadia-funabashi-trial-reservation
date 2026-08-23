@@ -121,10 +121,10 @@
     }
 
     .datetime-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 82px 82px;
-      gap: 8px;
-    }
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  gap: 8px;
+}
 
     .datetime-row > * {
       min-width: 0;
@@ -261,9 +261,9 @@
       }
 
       .datetime-row {
-        grid-template-columns: minmax(0, 1fr) 74px 74px;
-        gap: 6px;
-      }
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 6px;
+}
     }
   </style>
 </head>
@@ -340,22 +340,29 @@
               required
             >
 
-            <select id="firstHour" required>
-              <option value="">時</option>
-              <option value="17">17時</option>
-              <option value="18">18時</option>
-              <option value="19">19時</option>
-              <option value="20">20時</option>
-              <option value="21">21時</option>
-            </select>
-
-            <select id="firstMinute" required>
-              <option value="">分</option>
-              <option value="00">00分</option>
-              <option value="15">15分</option>
-              <option value="30">30分</option>
-              <option value="45">45分</option>
-            </select>
+            <select id="firstTime" required>
+  <option value="">時間を選択</option>
+  <option value="17:00">17:00</option>
+  <option value="17:15">17:15</option>
+  <option value="17:30">17:30</option>
+  <option value="17:45">17:45</option>
+  <option value="18:00">18:00</option>
+  <option value="18:15">18:15</option>
+  <option value="18:30">18:30</option>
+  <option value="18:45">18:45</option>
+  <option value="19:00">19:00</option>
+  <option value="19:15">19:15</option>
+  <option value="19:30">19:30</option>
+  <option value="19:45">19:45</option>
+  <option value="20:00">20:00</option>
+  <option value="20:15">20:15</option>
+  <option value="20:30">20:30</option>
+  <option value="20:45">20:45</option>
+  <option value="21:00">21:00</option>
+  <option value="21:15">21:15</option>
+  <option value="21:30">21:30</option>
+  <option value="21:45">21:45</option>
+</select>
 
           </div>
         </div>
@@ -376,22 +383,29 @@
               required
             >
 
-            <select id="secondHour" required>
-              <option value="">時</option>
-              <option value="17">17時</option>
-              <option value="18">18時</option>
-              <option value="19">19時</option>
-              <option value="20">20時</option>
-              <option value="21">21時</option>
-            </select>
-
-            <select id="secondMinute" required>
-              <option value="">分</option>
-              <option value="00">00分</option>
-              <option value="15">15分</option>
-              <option value="30">30分</option>
-              <option value="45">45分</option>
-            </select>
+            <select id="secondTime" required>
+  <option value="">時間を選択</option>
+  <option value="17:00">17:00</option>
+  <option value="17:15">17:15</option>
+  <option value="17:30">17:30</option>
+  <option value="17:45">17:45</option>
+  <option value="18:00">18:00</option>
+  <option value="18:15">18:15</option>
+  <option value="18:30">18:30</option>
+  <option value="18:45">18:45</option>
+  <option value="19:00">19:00</option>
+  <option value="19:15">19:15</option>
+  <option value="19:30">19:30</option>
+  <option value="19:45">19:45</option>
+  <option value="20:00">20:00</option>
+  <option value="20:15">20:15</option>
+  <option value="20:30">20:30</option>
+  <option value="20:45">20:45</option>
+  <option value="21:00">21:00</option>
+  <option value="21:15">21:15</option>
+  <option value="21:30">21:30</option>
+  <option value="21:45">21:45</option>
+</select>
 
           </div>
         </div>
@@ -412,22 +426,29 @@
               required
             >
 
-            <select id="thirdHour" required>
-              <option value="">時</option>
-              <option value="17">17時</option>
-              <option value="18">18時</option>
-              <option value="19">19時</option>
-              <option value="20">20時</option>
-              <option value="21">21時</option>
-            </select>
-
-            <select id="thirdMinute" required>
-              <option value="">分</option>
-              <option value="00">00分</option>
-              <option value="15">15分</option>
-              <option value="30">30分</option>
-              <option value="45">45分</option>
-            </select>
+            <select id="thirdTime" required>
+  <option value="">時間を選択</option>
+  <option value="17:00">17:00</option>
+  <option value="17:15">17:15</option>
+  <option value="17:30">17:30</option>
+  <option value="17:45">17:45</option>
+  <option value="18:00">18:00</option>
+  <option value="18:15">18:15</option>
+  <option value="18:30">18:30</option>
+  <option value="18:45">18:45</option>
+  <option value="19:00">19:00</option>
+  <option value="19:15">19:15</option>
+  <option value="19:30">19:30</option>
+  <option value="19:45">19:45</option>
+  <option value="20:00">20:00</option>
+  <option value="20:15">20:15</option>
+  <option value="20:30">20:30</option>
+  <option value="20:45">20:45</option>
+  <option value="21:00">21:00</option>
+  <option value="21:15">21:15</option>
+  <option value="21:30">21:30</option>
+  <option value="21:45">21:45</option>
+</select>
 
           </div>
         </div>
@@ -748,52 +769,51 @@
     // ----------------------------------
 
     function formatDateTime(
-      dateValue,
-      hourValue,
-      minuteValue
-    ) {
+  dateValue,
+  timeValue
+) {
 
-      const parts =
-        dateValue
-          .split('-')
-          .map(Number);
+  const parts =
+    dateValue
+      .split('-')
+      .map(Number);
 
-      const year = parts[0];
-      const month = parts[1];
-      const day = parts[2];
+  const year = parts[0];
+  const month = parts[1];
+  const day = parts[2];
 
-      const date =
-        new Date(
-          year,
-          month - 1,
-          day
-        );
+  const date =
+    new Date(
+      year,
+      month - 1,
+      day
+    );
 
-      const weekdays = [
-        '日',
-        '月',
-        '火',
-        '水',
-        '木',
-        '金',
-        '土'
-      ];
+  const weekdays = [
+    '日',
+    '月',
+    '火',
+    '水',
+    '木',
+    '金',
+    '土'
+  ];
 
-      const weekday =
-        weekdays[date.getDay()];
+  const weekday =
+    weekdays[date.getDay()];
 
-      const formattedMonth =
-        String(month).padStart(2, '0');
+  const formattedMonth =
+    String(month).padStart(2, '0');
 
-      const formattedDay =
-        String(day).padStart(2, '0');
+  const formattedDay =
+    String(day).padStart(2, '0');
 
-      return (
-        `${year}/${formattedMonth}/${formattedDay}` +
-        `（${weekday}）` +
-        `${hourValue}:${minuteValue}`
-      );
-    }
+  return (
+  `${year}/${formattedMonth}/${formattedDay}` +
+  `（${weekday}）` +
+  ` ${timeValue}`
+);
+}
 
 
     // ----------------------------------
@@ -827,6 +847,113 @@
 
         inputError.classList.remove('show');
 
+        const firstDate =
+  document.getElementById('firstDate').value;
+
+const secondDate =
+  document.getElementById('secondDate').value;
+
+const thirdDate =
+  document.getElementById('thirdDate').value;
+
+const firstTime =
+  document.getElementById('firstTime').value;
+
+const secondTime =
+  document.getElementById('secondTime').value;
+
+const thirdTime =
+  document.getElementById('thirdTime').value;
+
+
+function timeToMinutes(timeValue) {
+
+  if (!timeValue) {
+    return null;
+  }
+
+  const parts =
+    timeValue
+      .split(':')
+      .map(Number);
+
+  return (
+    parts[0] * 60 +
+    parts[1]
+  );
+}
+
+
+const reservations = [
+  {
+    date: firstDate,
+    time: firstTime
+  },
+  {
+    date: secondDate,
+    time: secondTime
+  },
+  {
+    date: thirdDate,
+    time: thirdTime
+  }
+];
+
+
+for (
+  let i = 0;
+  i < reservations.length;
+  i++
+) {
+
+  for (
+    let j = i + 1;
+    j < reservations.length;
+    j++
+  ) {
+
+    if (
+      reservations[i].date ===
+      reservations[j].date
+    ) {
+
+      const firstMinutes =
+  timeToMinutes(
+    reservations[i].time
+  );
+
+const secondMinutes =
+  timeToMinutes(
+    reservations[j].time
+  );
+
+if (
+  firstMinutes === null ||
+  secondMinutes === null
+) {
+  continue;
+}
+
+const difference =
+  Math.abs(
+    firstMinutes -
+    secondMinutes
+  );
+
+
+      if (difference < 30) {
+
+        inputError.textContent =
+          '同じ日の希望日時は、30分以上間隔を空けてご入力ください。';
+
+        inputError.classList.add('show');
+
+        return;
+      }
+    }
+  }
+}
+
 
         reservationData = {
 
@@ -842,25 +969,22 @@
               .value,
 
           firstDateTime:
-            formatDateTime(
-              document.getElementById('firstDate').value,
-              document.getElementById('firstHour').value,
-              document.getElementById('firstMinute').value
-            ),
+  formatDateTime(
+    document.getElementById('firstDate').value,
+    document.getElementById('firstTime').value
+  ),
 
-          secondDateTime:
-            formatDateTime(
-              document.getElementById('secondDate').value,
-              document.getElementById('secondHour').value,
-              document.getElementById('secondMinute').value
-            ),
+secondDateTime:
+  formatDateTime(
+    document.getElementById('secondDate').value,
+    document.getElementById('secondTime').value
+  ),
 
-          thirdDateTime:
-            formatDateTime(
-              document.getElementById('thirdDate').value,
-              document.getElementById('thirdHour').value,
-              document.getElementById('thirdMinute').value
-            ),
+thirdDateTime:
+  formatDateTime(
+    document.getElementById('thirdDate').value,
+    document.getElementById('thirdTime').value
+  ),
 
           note:
             document
