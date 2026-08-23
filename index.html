@@ -235,6 +235,10 @@
       line-height: 1.8;
     }
 
+    .close-button {
+  margin-top: 28px;
+}
+
     .error-message {
       display: none;
       margin-top: 18px;
@@ -563,34 +567,42 @@
 
 
     <!-- ==========================================
-         ③ 完了画面
-    =========================================== -->
+     ③ 完了画面
+=========================================== -->
 
-    <section id="completeScreen" class="screen">
+<section id="completeScreen" class="screen">
 
-      <div class="complete-box">
+  <div class="complete-box">
 
-        <div class="complete-icon">
-          ✓
-        </div>
+    <div class="complete-icon">
+      ✓
+    </div>
 
-        <div class="complete-title">
-          お申し込みを受け付けました
-        </div>
+    <div class="complete-title">
+      お申し込みを受け付けました
+    </div>
 
-        <div class="complete-text">
-          ポーカー体験会へお申し込みいただき<br>
-          ありがとうございます✨
-          <br><br>
-          内容を確認後、担当者よりLINEにて<br>
-          ご連絡いたします。
-          <br><br>
-          ※現時点では、ご予約はまだ確定しておりません。
-        </div>
+    <div class="complete-text">
+      ポーカー体験会へお申し込みいただき<br>
+      ありがとうございます✨
+      <br><br>
+      内容を確認後、担当者よりLINEにて<br>
+      ご連絡いたします。
+      <br><br>
+      ※現時点では、ご予約はまだ確定しておりません。
+    </div>
 
-      </div>
+    <button
+      type="button"
+      class="primary-button close-button"
+      onclick="liff.closeWindow()"
+    >
+      画面を閉じる
+    </button>
 
-    </section>
+  </div>
+
+</section>
 
   </main>
 
