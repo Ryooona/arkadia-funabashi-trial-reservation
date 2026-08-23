@@ -44,7 +44,6 @@
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
         sans-serif;
-
       background: var(--background);
       color: var(--ink);
     }
@@ -84,7 +83,6 @@
       margin-left: 6px;
       color: var(--error);
       font-size: 12px;
-      font-weight: 600;
     }
 
     .optional {
@@ -132,52 +130,124 @@
       min-width: 0;
     }
 
-    .hint {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
     button {
       display: block;
       width: 100%;
       min-height: 52px;
-      margin-top: 8px;
       padding: 13px 16px;
       border: 0;
       border-radius: 8px;
-      background: var(--green);
-      color: #fff;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
     }
 
-    button:disabled {
+    .primary-button {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .primary-button:disabled {
       background: var(--green-disabled);
       cursor: default;
     }
 
-    .message {
+    .secondary-button {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* 確認画面 */
+
+    .confirmation-card {
+      overflow: hidden;
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .confirmation-item {
+      padding: 16px;
+      border-bottom: 1px solid #eceef1;
+    }
+
+    .confirmation-item:last-child {
+      border-bottom: 0;
+    }
+
+    .confirmation-label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .confirmation-value {
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* 完了画面 */
+
+    .complete-box {
+      margin-top: 50px;
+      padding: 30px 22px;
+      border-radius: 12px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .complete-icon {
+      margin-bottom: 16px;
+      color: var(--green);
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .complete-title {
+      margin-bottom: 16px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .complete-text {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .error-message {
       display: none;
       margin-top: 18px;
       padding: 14px;
       border-radius: 8px;
+      background: #fef2f2;
+      color: var(--error);
       font-size: 14px;
       line-height: 1.7;
     }
 
-    .message.success {
+    .error-message.show {
       display: block;
-      background: #ecfdf3;
-      color: var(--success);
-    }
-
-    .message.error {
-      display: block;
-      background: #fef2f2;
-      color: var(--error);
     }
 
     @media (max-width: 380px) {
@@ -198,204 +268,384 @@
 
   <main class="container">
 
-    <h1>ポーカー体験会 お申し込み</h1>
+    <!-- ==========================================
+         ① 入力画面
+    =========================================== -->
 
-    <div class="description">
-      ご希望の日時を第3希望までご入力ください。<br>
-      ※フォーム送信時点では、ご予約はまだ確定しておりません。
-    </div>
+    <section id="inputScreen" class="screen active">
 
-    <form id="reservationForm">
+      <h1>ポーカー体験会 お申し込み</h1>
 
-      <div class="field">
-        <label for="representativeName">
-          代表者名（ニックネーム可）
-          <span class="required">必須</span>
-        </label>
+      <div class="description">
+        ご希望の日時を第3希望までご入力ください。<br>
+        ※フォーム送信時点では、ご予約はまだ確定しておりません。
+      </div>
 
-        <input
-          type="text"
-          id="representativeName"
-          required
+      <form id="reservationForm">
+
+        <div class="field">
+          <label for="representativeName">
+            代表者名（ニックネーム可）
+            <span class="required">必須</span>
+          </label>
+
+          <input
+            type="text"
+            id="representativeName"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="guestCount">
+            ご来場人数
+            <span class="required">必須</span>
+          </label>
+
+          <select id="guestCount" required>
+            <option value="">選択してください</option>
+            <option value="1名">1名</option>
+            <option value="2名">2名</option>
+            <option value="3名">3名</option>
+            <option value="4名">4名</option>
+            <option value="5名">5名</option>
+            <option value="6名">6名</option>
+            <option value="7名">7名</option>
+            <option value="8名">8名</option>
+            <option value="9名">9名</option>
+            <option value="10名以上">10名以上</option>
+          </select>
+        </div>
+
+        <!-- 第1希望 -->
+
+        <div class="field">
+          <label>
+            第1希望日時
+            <span class="required">必須</span>
+          </label>
+
+          <div class="datetime-row">
+
+            <input
+              type="date"
+              id="firstDate"
+              required
+            >
+
+            <select id="firstHour" required>
+              <option value="">時</option>
+              <option value="17">17時</option>
+              <option value="18">18時</option>
+              <option value="19">19時</option>
+              <option value="20">20時</option>
+              <option value="21">21時</option>
+            </select>
+
+            <select id="firstMinute" required>
+              <option value="">分</option>
+              <option value="00">00分</option>
+              <option value="15">15分</option>
+              <option value="30">30分</option>
+              <option value="45">45分</option>
+            </select>
+
+          </div>
+        </div>
+
+        <!-- 第2希望 -->
+
+        <div class="field">
+          <label>
+            第2希望日時
+            <span class="required">必須</span>
+          </label>
+
+          <div class="datetime-row">
+
+            <input
+              type="date"
+              id="secondDate"
+              required
+            >
+
+            <select id="secondHour" required>
+              <option value="">時</option>
+              <option value="17">17時</option>
+              <option value="18">18時</option>
+              <option value="19">19時</option>
+              <option value="20">20時</option>
+              <option value="21">21時</option>
+            </select>
+
+            <select id="secondMinute" required>
+              <option value="">分</option>
+              <option value="00">00分</option>
+              <option value="15">15分</option>
+              <option value="30">30分</option>
+              <option value="45">45分</option>
+            </select>
+
+          </div>
+        </div>
+
+        <!-- 第3希望 -->
+
+        <div class="field">
+          <label>
+            第3希望日時
+            <span class="required">必須</span>
+          </label>
+
+          <div class="datetime-row">
+
+            <input
+              type="date"
+              id="thirdDate"
+              required
+            >
+
+            <select id="thirdHour" required>
+              <option value="">時</option>
+              <option value="17">17時</option>
+              <option value="18">18時</option>
+              <option value="19">19時</option>
+              <option value="20">20時</option>
+              <option value="21">21時</option>
+            </select>
+
+            <select id="thirdMinute" required>
+              <option value="">分</option>
+              <option value="00">00分</option>
+              <option value="15">15分</option>
+              <option value="30">30分</option>
+              <option value="45">45分</option>
+            </select>
+
+          </div>
+        </div>
+
+        <!-- 備考 -->
+
+        <div class="field">
+          <label for="note">
+            備考・ご質問
+            <span class="optional">任意</span>
+          </label>
+
+          <textarea
+            id="note"
+            placeholder="ご質問などがございましたらご入力ください"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          id="confirmButton"
+          class="primary-button"
+          disabled
         >
-      </div>
+          読み込み中...
+        </button>
 
-      <div class="field">
-        <label for="guestCount">
-          ご来場人数
-          <span class="required">必須</span>
-        </label>
-
-        <select id="guestCount" required>
-          <option value="">選択してください</option>
-          <option value="1名">1名</option>
-          <option value="2名">2名</option>
-          <option value="3名">3名</option>
-          <option value="4名">4名</option>
-          <option value="5名">5名</option>
-          <option value="6名">6名</option>
-          <option value="7名">7名</option>
-          <option value="8名">8名</option>
-          <option value="9名">9名</option>
-          <option value="10名以上">10名以上</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>
-          第1希望日時
-          <span class="required">必須</span>
-        </label>
-
-        <div class="datetime-row">
-          <input
-            type="date"
-            id="firstDate"
-            aria-label="第1希望日"
-            required
-          >
-
-          <select id="firstHour" aria-label="第1希望 時" required>
-            <option value="">時</option>
-            <option value="17">17時</option>
-            <option value="18">18時</option>
-            <option value="19">19時</option>
-            <option value="20">20時</option>
-            <option value="21">21時</option>
-          </select>
-
-          <select id="firstMinute" aria-label="第1希望 分" required>
-            <option value="">分</option>
-            <option value="00">00分</option>
-            <option value="15">15分</option>
-            <option value="30">30分</option>
-            <option value="45">45分</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>
-          第2希望日時
-          <span class="required">必須</span>
-        </label>
-
-        <div class="datetime-row">
-          <input
-            type="date"
-            id="secondDate"
-            aria-label="第2希望日"
-            required
-          >
-
-          <select id="secondHour" aria-label="第2希望 時" required>
-            <option value="">時</option>
-            <option value="17">17時</option>
-            <option value="18">18時</option>
-            <option value="19">19時</option>
-            <option value="20">20時</option>
-            <option value="21">21時</option>
-          </select>
-
-          <select id="secondMinute" aria-label="第2希望 分" required>
-            <option value="">分</option>
-            <option value="00">00分</option>
-            <option value="15">15分</option>
-            <option value="30">30分</option>
-            <option value="45">45分</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>
-          第3希望日時
-          <span class="required">必須</span>
-        </label>
-
-        <div class="datetime-row">
-          <input
-            type="date"
-            id="thirdDate"
-            aria-label="第3希望日"
-            required
-          >
-
-          <select id="thirdHour" aria-label="第3希望 時" required>
-            <option value="">時</option>
-            <option value="17">17時</option>
-            <option value="18">18時</option>
-            <option value="19">19時</option>
-            <option value="20">20時</option>
-            <option value="21">21時</option>
-          </select>
-
-          <select id="thirdMinute" aria-label="第3希望 分" required>
-            <option value="">分</option>
-            <option value="00">00分</option>
-            <option value="15">15分</option>
-            <option value="30">30分</option>
-            <option value="45">45分</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="note">
-          備考・ご質問
-          <span class="optional">任意</span>
-        </label>
-
-        <textarea
-          id="note"
-          placeholder="ご質問などがございましたらご入力ください"
-        ></textarea>
-      </div>
-
-      <button
-        type="submit"
-        id="submitButton"
-        disabled
-      >
-        読み込み中...
-      </button>
+      </form>
 
       <div
-        id="message"
-        class="message"
-        role="status"
-        aria-live="polite"
+        id="inputError"
+        class="error-message"
       ></div>
 
-    </form>
+    </section>
+
+
+    <!-- ==========================================
+         ② 確認画面
+    =========================================== -->
+
+    <section id="confirmScreen" class="screen">
+
+      <h1>お申し込み内容の確認</h1>
+
+      <div class="description">
+        以下の内容をご確認のうえ、「申し込む」を押してください。
+      </div>
+
+      <div class="confirmation-card">
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            代表者名
+          </div>
+          <div
+            id="confirmName"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            ご来場人数
+          </div>
+          <div
+            id="confirmGuestCount"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            第1希望
+          </div>
+          <div
+            id="confirmFirst"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            第2希望
+          </div>
+          <div
+            id="confirmSecond"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            第3希望
+          </div>
+          <div
+            id="confirmThird"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            備考・ご質問
+          </div>
+          <div
+            id="confirmNote"
+            class="confirmation-value"
+          ></div>
+        </div>
+
+      </div>
+
+      <div class="button-row">
+
+        <button
+          type="button"
+          id="editButton"
+          class="secondary-button"
+        >
+          修正する
+        </button>
+
+        <button
+          type="button"
+          id="submitButton"
+          class="primary-button"
+        >
+          申し込む
+        </button>
+
+      </div>
+
+      <div
+        id="confirmError"
+        class="error-message"
+      ></div>
+
+    </section>
+
+
+    <!-- ==========================================
+         ③ 完了画面
+    =========================================== -->
+
+    <section id="completeScreen" class="screen">
+
+      <div class="complete-box">
+
+        <div class="complete-icon">
+          ✓
+        </div>
+
+        <div class="complete-title">
+          お申し込みを受け付けました
+        </div>
+
+        <div class="complete-text">
+          ポーカー体験会へお申し込みいただき<br>
+          ありがとうございます✨
+          <br><br>
+          内容を確認後、担当者よりLINEにて<br>
+          ご連絡いたします。
+          <br><br>
+          ※現時点では、ご予約はまだ確定しておりません。
+        </div>
+
+      </div>
+
+    </section>
 
   </main>
 
+
   <script>
-    const LIFF_ID = '2011216818-LyOXLWar';
+
+    const LIFF_ID =
+      '2011216818-LyOXLWar';
 
     const GAS_URL =
       'https://script.google.com/macros/s/AKfycby1GxM5KK4NwQWnu1sGrEf2EQV5_BI3M0-KYo2K22po29tZJh0sJP_MZEiR5GAe1qy5/exec';
 
+
     let lineUserId = '';
     let lineDisplayName = '';
+
+    let reservationData = null;
+
+
+    const inputScreen =
+      document.getElementById('inputScreen');
+
+    const confirmScreen =
+      document.getElementById('confirmScreen');
+
+    const completeScreen =
+      document.getElementById('completeScreen');
 
     const form =
       document.getElementById('reservationForm');
 
+    const confirmButton =
+      document.getElementById('confirmButton');
+
     const submitButton =
       document.getElementById('submitButton');
 
-    const message =
-      document.getElementById('message');
+    const editButton =
+      document.getElementById('editButton');
+
+    const inputError =
+      document.getElementById('inputError');
+
+    const confirmError =
+      document.getElementById('confirmError');
 
 
     // ----------------------------------
-    // LIFF初期化
+    // LIFF
     // ----------------------------------
 
     async function initializeLiff() {
+
       try {
+
         await liff.init({
           liffId: LIFF_ID
         });
@@ -414,31 +664,34 @@
         lineDisplayName =
           profile.displayName || '';
 
-        submitButton.disabled = false;
-        submitButton.textContent = '申し込む';
+        confirmButton.disabled = false;
+
+        confirmButton.textContent =
+          '入力内容を確認する';
 
       } catch (error) {
-        console.error(
-          'LIFF initialization failed:',
-          error
-        );
 
-        showMessage(
-          'error',
-          'LINEとの接続に失敗しました。LINEからもう一度開いてください。'
-        );
+        console.error(error);
 
-        submitButton.disabled = true;
-        submitButton.textContent = 'LINE接続エラー';
+        inputError.textContent =
+          'LINEとの接続に失敗しました。LINEからもう一度開いてください。';
+
+        inputError.classList.add('show');
+
+        confirmButton.disabled = true;
+
+        confirmButton.textContent =
+          'LINE接続エラー';
       }
     }
 
 
     // ----------------------------------
-    // 今日より前の日付を選択不可
+    // 今日以降のみ選択
     // ----------------------------------
 
     function getTodayString() {
+
       const now = new Date();
 
       const year =
@@ -457,21 +710,26 @@
       return `${year}-${month}-${day}`;
     }
 
+
     const todayString =
       getTodayString();
+
 
     [
       'firstDate',
       'secondDate',
       'thirdDate'
     ].forEach(function(id) {
-      document.getElementById(id).min =
-        todayString;
+
+      document
+        .getElementById(id)
+        .min = todayString;
+
     });
 
 
     // ----------------------------------
-    // 曜日付き日時
+    // 日時フォーマット
     // ----------------------------------
 
     function formatDateTime(
@@ -479,6 +737,7 @@
       hourValue,
       minuteValue
     ) {
+
       const parts =
         dateValue
           .split('-')
@@ -523,47 +782,38 @@
 
 
     // ----------------------------------
-    // メッセージ表示
+    // 画面切り替え
     // ----------------------------------
 
-    function showMessage(
-      type,
-      text
-    ) {
-      message.className =
-        'message ' + type;
+    function showScreen(screen) {
 
-      message.textContent =
-        text;
+      inputScreen.classList.remove('active');
+      confirmScreen.classList.remove('active');
+      completeScreen.classList.remove('active');
+
+      screen.classList.add('active');
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
 
 
     // ----------------------------------
-    // 送信
+    // 入力 → 確認
     // ----------------------------------
 
     form.addEventListener(
       'submit',
-      async function(event) {
+      function(event) {
 
         event.preventDefault();
 
-        if (!lineUserId) {
-          showMessage(
-            'error',
-            'LINEユーザー情報を取得できませんでした。LINEからもう一度開いてください。'
-          );
+        inputError.classList.remove('show');
 
-          return;
-        }
 
-        message.className =
-          'message';
-
-        message.textContent =
-          '';
-
-        const data = {
+        reservationData = {
 
           representativeName:
             document
@@ -611,8 +861,83 @@
         };
 
 
+        document
+          .getElementById('confirmName')
+          .textContent =
+            reservationData.representativeName;
+
+
+        document
+          .getElementById('confirmGuestCount')
+          .textContent =
+            reservationData.guestCount;
+
+
+        document
+          .getElementById('confirmFirst')
+          .textContent =
+            reservationData.firstDateTime;
+
+
+        document
+          .getElementById('confirmSecond')
+          .textContent =
+            reservationData.secondDateTime;
+
+
+        document
+          .getElementById('confirmThird')
+          .textContent =
+            reservationData.thirdDateTime;
+
+
+        document
+          .getElementById('confirmNote')
+          .textContent =
+            reservationData.note || '特になし';
+
+
+        showScreen(confirmScreen);
+      }
+    );
+
+
+    // ----------------------------------
+    // 修正する
+    // ----------------------------------
+
+    editButton.addEventListener(
+      'click',
+      function() {
+
+        confirmError.classList.remove('show');
+
+        showScreen(inputScreen);
+      }
+    );
+
+
+    // ----------------------------------
+    // 本送信
+    // ----------------------------------
+
+    submitButton.addEventListener(
+      'click',
+      async function() {
+
+        if (!reservationData) {
+          return;
+        }
+
+
+        confirmError.classList.remove('show');
+
         submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
+
+        editButton.disabled = true;
+
+        submitButton.textContent =
+          '送信中...';
 
 
         try {
@@ -629,7 +954,9 @@
                 },
 
                 body:
-                  JSON.stringify(data)
+                  JSON.stringify(
+                    reservationData
+                  )
               }
             );
 
@@ -639,6 +966,7 @@
 
 
           if (!result.success) {
+
             throw new Error(
               result.message ||
               '送信に失敗しました。'
@@ -646,29 +974,28 @@
           }
 
 
-          showMessage(
-            'success',
-            'お申し込みを受け付けました。'
-          );
-
-          form.reset();
+          // 完了画面へ
+          showScreen(completeScreen);
 
 
         } catch (error) {
 
           console.error(error);
 
-          showMessage(
-            'error',
-            '送信に失敗しました。時間をおいてもう一度お試しください。'
-          );
+          confirmError.textContent =
+            '送信に失敗しました。時間をおいてもう一度お試しください。';
+
+          confirmError.classList.add('show');
 
 
         } finally {
 
           submitButton.disabled = false;
-          submitButton.textContent = '申し込む';
 
+          editButton.disabled = false;
+
+          submitButton.textContent =
+            '申し込む';
         }
       }
     );
@@ -679,6 +1006,7 @@
     // ----------------------------------
 
     initializeLiff();
+
   </script>
 
 </body>
