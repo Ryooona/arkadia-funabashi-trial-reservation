@@ -593,12 +593,12 @@
     </div>
 
     <button
-      type="button"
-      class="primary-button close-button"
-      onclick="liff.closeWindow()"
-    >
-      画面を閉じる
-    </button>
+  type="button"
+  class="primary-button close-button"
+  onclick="closeLiffWindow()"
+>
+  画面を閉じる
+</button>
 
   </div>
 
@@ -1014,12 +1014,27 @@
 
 
     // ----------------------------------
-    // 起動
-    // ----------------------------------
+// LIFF画面を閉じる
+// ----------------------------------
 
-    initializeLiff();
+function closeLiffWindow() {
+  if (liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    alert(
+      'この画面は自動で閉じることができません。\n左上の「×」または戻る操作で閉じてください。'
+    );
+  }
+}
 
-  </script>
+
+// ----------------------------------
+// 起動
+// ----------------------------------
+
+initializeLiff();
+
+</script>
 
 </body>
 </html>
