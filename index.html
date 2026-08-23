@@ -367,12 +367,18 @@
           </div>
         </div>
 
+        <div class="description">
+
+  ※第2・第3希望もご入力いただくと、ご予約をご案内しやすくなります。
+
+</div>
+
         <!-- 第2希望 -->
 
         <div class="field">
           <label>
             第2希望日時
-            <span class="required">必須</span>
+            <span class="optional">任意</span>
           </label>
 
           <div class="datetime-row">
@@ -380,10 +386,9 @@
             <input
               type="date"
               id="secondDate"
-              required
             >
 
-            <select id="secondTime" required>
+            <select id="secondTime">
   <option value="">時間を選択</option>
   <option value="17:00">17:00</option>
   <option value="17:15">17:15</option>
@@ -415,7 +420,7 @@
         <div class="field">
           <label>
             第3希望日時
-            <span class="required">必須</span>
+            <span class="optional">任意</span>
           </label>
 
           <div class="datetime-row">
@@ -423,10 +428,9 @@
             <input
               type="date"
               id="thirdDate"
-              required
             >
 
-            <select id="thirdTime" required>
+            <select id="thirdTime">
   <option value="">時間を選択</option>
   <option value="17:00">17:00</option>
   <option value="17:15">17:15</option>
@@ -865,6 +869,29 @@ const secondTime =
 const thirdTime =
   document.getElementById('thirdTime').value;
 
+        if (
+  (secondDate && !secondTime) ||
+  (!secondDate && secondTime)
+) {
+  inputError.textContent =
+    '第2希望は、日付と時間の両方をご入力ください。';
+
+  inputError.classList.add('show');
+
+  return;
+}
+
+if (
+  (thirdDate && !thirdTime) ||
+  (!thirdDate && thirdTime)
+) {
+  inputError.textContent =
+    '第3希望は、日付と時間の両方をご入力ください。';
+
+  inputError.classList.add('show');
+
+  return;
+}
 
 function timeToMinutes(timeValue) {
 
@@ -970,21 +997,25 @@ const difference =
 
           firstDateTime:
   formatDateTime(
-    document.getElementById('firstDate').value,
-    document.getElementById('firstTime').value
+    firstDate,
+    firstTime
   ),
 
 secondDateTime:
-  formatDateTime(
-    document.getElementById('secondDate').value,
-    document.getElementById('secondTime').value
-  ),
+  secondDate && secondTime
+    ? formatDateTime(
+        secondDate,
+        secondTime
+      )
+    : '',
 
 thirdDateTime:
-  formatDateTime(
-    document.getElementById('thirdDate').value,
-    document.getElementById('thirdTime').value
-  ),
+  thirdDate && thirdTime
+    ? formatDateTime(
+        thirdDate,
+        thirdTime
+      )
+    : '',
 
           note:
             document
@@ -1019,15 +1050,15 @@ thirdDateTime:
 
 
         document
-          .getElementById('confirmSecond')
-          .textContent =
-            reservationData.secondDateTime;
+  .getElementById('confirmSecond')
+  .textContent =
+    reservationData.secondDateTime || '未入力';
 
 
-        document
-          .getElementById('confirmThird')
-          .textContent =
-            reservationData.thirdDateTime;
+       document
+  .getElementById('confirmThird')
+  .textContent =
+    reservationData.thirdDateTime || '未入力';
 
 
         document
