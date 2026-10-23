@@ -239,10 +239,7 @@
   margin-top: 28px;
 }
 
-    .line-message-option { margin-top: 24px; font-size: 14px; line-height: 1.7; }
-    .line-message-option label { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
-    .line-message-option input { width: 22px; min-height: 22px; flex: 0 0 22px; margin-top: 3px; }
-    .line-message-option p { color: var(--muted); }
+    .line-message-notice { margin-top: 24px; color: var(--muted); font-size: 14px; line-height: 1.7; }
     .line-message-status { margin-top: 24px; font-size: 14px; line-height: 1.7; text-align: left; }
     .line-message-status textarea { margin: 12px 0; min-height: 180px; font-size: 14px; }
     [hidden] { display: none !important; }
@@ -574,12 +571,8 @@
 
       </div>
 
-      <div class="line-message-option">
-        <label id="lineMessageOption" hidden>
-          <input type="checkbox" id="lineMessageConsent">
-          <span>船橋店の公式LINEのトークから開いています。「体験会予約申し込み」と同じトークにも送信します。</span>
-        </label>
-        <p id="lineMessageNotice">申込完了後、申込内容をコピーして船橋店の公式LINEへ送ることもできます。</p>
+      <div class="line-message-notice">
+        <p id="lineMessageNotice">申込完了後、公式LINEのトークへ「体験会予約申し込み」を自動送信します。</p>
       </div>
 
       <div class="button-row">
@@ -733,20 +726,26 @@
         lineDisplayName =
           profile.displayName || '';
 
-        // 送信先は起動元のトーク。本人が公式LINEから開いたと確認した場合のみ送る。
+        // 送信先は起動元の1対1トーク。公式LINEのトークから開いた場合に自動送信する。
         try {
           const context = liff.getContext();
-          const permission = await liff.permission.query('chat_message.write');
-          canSendLineMessage = liff.isInClient() && context &&
-            context.type === 'utou' && permission.state === 'granted';
+          const inOfficialLineChat = liff.isInClient() && context && context.type === 'utou';
+          if (inOfficialLineChat && liff.permission && typeof liff.permission.query === 'function') {
+            let permission = await liff.permission.query('chat_message.write');
+            if (permission.state !== 'granted' && typeof liff.permission.request === 'function') {
+              try {
+                await liff.permission.request('chat_message.write');
+                permission = await liff.permission.query('chat_message.write');
+              } catch (_) {}
+            }
+            canSendLineMessage = permission.state === 'granted';
+          }
         } catch (_) {
           canSendLineMessage = false;
         }
-        document.getElementById('lineMessageOption').hidden = !canSendLineMessage;
-        if (canSendLineMessage) {
-          document.getElementById('lineMessageNotice').textContent =
-            '上にチェックすると、申込完了後に申込内容をLINEへ送信します。公式LINE以外から開いた場合はチェックしないでください。';
-        }
+        document.getElementById('lineMessageNotice').textContent = canSendLineMessage
+          ? '申込完了後、「体験会予約申し込み」を公式LINEのトークへ自動送信します。'
+          : '申込完了後、LINEへ自動送信できない場合は画面に案内を表示します。';
 
         confirmButton.disabled = false;
 
@@ -1231,8 +1230,8 @@ thirdDateTime:
       const fallback = document.getElementById('lineMessageFallback');
       const text = buildReservationLineMessage(data);
       document.getElementById('lineMessageText').value = text;
-      if (!canSendLineMessage || !document.getElementById('lineMessageConsent').checked) {
-        status.textContent = '申込は完了しています。LINEへのメッセージは自動送信していません。';
+      if (!canSendLineMessage) {
+        status.textContent = '申込は完了しましたが、この画面ではLINEへ自動送信できません。下の文章を公式LINEのトークへ送信してください。';
         fallback.hidden = false;
         return;
       }
