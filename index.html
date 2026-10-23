@@ -577,7 +577,7 @@
       <div class="line-message-option">
         <label id="lineMessageOption" hidden>
           <input type="checkbox" id="lineMessageConsent">
-          <span>船橋店の公式LINEのトークから開いています。申込内容を同じトークにも送信します。</span>
+          <span>船橋店の公式LINEのトークから開いています。「体験会予約申し込み」と同じトークにも送信します。</span>
         </label>
         <p id="lineMessageNotice">申込完了後、申込内容をコピーして船橋店の公式LINEへ送ることもできます。</p>
       </div>
@@ -1222,20 +1222,8 @@ thirdDateTime:
     );
 
 
-    function buildReservationLineMessage(data) {
-      const value = (text, limit) => String(text || '')
-        .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').slice(0, limit);
-      return [
-        '【船橋店】ポーカー体験会を申し込みました', '',
-        '代表者：' + value(data.representativeName, 200),
-        'ご来場人数：' + value(data.guestCount, 30), '',
-        '第1希望：' + value(data.firstDateTime, 100),
-        '第2希望：' + (value(data.secondDateTime, 100) || '指定なし'),
-        '第3希望：' + (value(data.thirdDateTime, 100) || '指定なし'), '',
-        '備考・ご質問：', value(data.note, 3500) || 'なし', '',
-        '※フォームから申込済みです。予約はまだ確定していません。',
-        '日程のご確認をお願いします。'
-      ].join('\n');
+    function buildReservationLineMessage() {
+      return '体験会予約申し込み';
     }
 
     async function notifyReservationInLine(data) {
