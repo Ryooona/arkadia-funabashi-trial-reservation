@@ -1157,6 +1157,9 @@ thirdDateTime:
 
         try {
 
+          // LINE通知を先に送ってから申込を保存し、公式LINEの返信より上に表示する。
+          await notifyReservationInLine(reservationData);
+
           const response =
             await fetch(
               GAS_URL,
@@ -1191,10 +1194,8 @@ thirdDateTime:
           }
 
 
-          // 保存成功を先に確定し、LINE送信失敗で申込を再送させない。
           reservationSaved = true;
           showScreen(completeScreen);
-          await notifyReservationInLine(reservationData);
 
 
         } catch (error) {
@@ -1231,11 +1232,11 @@ thirdDateTime:
       const text = buildReservationLineMessage(data);
       document.getElementById('lineMessageText').value = text;
       if (!canSendLineMessage) {
-        status.textContent = '申込は完了しましたが、この画面ではLINEへ自動送信できません。下の文章を公式LINEのトークへ送信してください。';
+        status.textContent = 'LINEへ自動送信できません。申込後に、下の文章を公式LINEのトークへ送信してください。';
         fallback.hidden = false;
         return;
       }
-      status.textContent = '申込は完了しました。LINEへ申込内容を送信しています…';
+      status.textContent = 'LINEへ申込メッセージを送信しています…';
       let timer;
       try {
         await Promise.race([
@@ -1244,10 +1245,10 @@ thirdDateTime:
             timer = setTimeout(() => reject(new Error('LINE_SEND_TIMEOUT')), 15000);
           })
         ]);
-        status.textContent = 'LINEのトークへ申込内容を送信しました。';
+        status.textContent = 'LINEのトークへ申込メッセージを送信しました。';
         fallback.hidden = true;
       } catch (_) {
-        status.textContent = '申込は完了しています。LINEへの送信を確認できませんでした。トークに申込内容が届いていない場合だけ、下の文章を送信してください。';
+        status.textContent = 'LINEへの送信を確認できませんでした。申込後、トークに届いていない場合だけ下の文章を送信してください。';
         fallback.hidden = false;
       } finally {
         clearTimeout(timer);
