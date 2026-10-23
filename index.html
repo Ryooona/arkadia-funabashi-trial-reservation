@@ -239,6 +239,14 @@
   margin-top: 28px;
 }
 
+    .line-message-option { margin-top: 24px; font-size: 14px; line-height: 1.7; }
+    .line-message-option label { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+    .line-message-option input { width: 22px; min-height: 22px; flex: 0 0 22px; margin-top: 3px; }
+    .line-message-option p { color: var(--muted); }
+    .line-message-status { margin-top: 24px; font-size: 14px; line-height: 1.7; text-align: left; }
+    .line-message-status textarea { margin: 12px 0; min-height: 180px; font-size: 14px; }
+    [hidden] { display: none !important; }
+
     .error-message {
       display: none;
       margin-top: 18px;
@@ -566,6 +574,14 @@
 
       </div>
 
+      <div class="line-message-option">
+        <label id="lineMessageOption" hidden>
+          <input type="checkbox" id="lineMessageConsent">
+          <span>船橋店の公式LINEのトークから開いています。申込内容を同じトークにも送信します。</span>
+        </label>
+        <p id="lineMessageNotice">申込完了後、申込内容をコピーして船橋店の公式LINEへ送ることもできます。</p>
+      </div>
+
       <div class="button-row">
 
         <button
@@ -620,6 +636,16 @@
       ※現時点では、ご予約はまだ確定しておりません。
     </div>
 
+    <div class="line-message-status" aria-live="polite">
+      <p id="lineMessageStatus"></p>
+      <div id="lineMessageFallback" hidden>
+        <p>以下の文章をコピーして、船橋店の公式LINEのトークへ貼り付けて送信してください。フォームから再度申し込む必要はありません。</p>
+        <textarea id="lineMessageText" readonly aria-label="公式LINEへ送る申込内容"></textarea>
+        <button type="button" id="copyLineMessageButton" class="secondary-button">申込内容をコピーする</button>
+        <p id="copyLineMessageStatus" role="status"></p>
+      </div>
+    </div>
+
     <button
   type="button"
   class="primary-button close-button"
@@ -648,6 +674,9 @@
     let lineDisplayName = '';
 
     let reservationData = null;
+    let reservationSaved = false;
+    let submissionInProgress = false;
+    let canSendLineMessage = false;
 
 
     const inputScreen =
@@ -703,6 +732,21 @@
 
         lineDisplayName =
           profile.displayName || '';
+
+        // 送信先は起動元のトーク。本人が公式LINEから開いたと確認した場合のみ送る。
+        try {
+          const context = liff.getContext();
+          const permission = await liff.permission.query('chat_message.write');
+          canSendLineMessage = liff.isInClient() && context &&
+            context.type === 'utou' && permission.state === 'granted';
+        } catch (_) {
+          canSendLineMessage = false;
+        }
+        document.getElementById('lineMessageOption').hidden = !canSendLineMessage;
+        if (canSendLineMessage) {
+          document.getElementById('lineMessageNotice').textContent =
+            '上にチェックすると、申込完了後に申込内容をLINEへ送信します。公式LINE以外から開いた場合はチェックしないでください。';
+        }
 
         confirmButton.disabled = false;
 
@@ -1095,9 +1139,11 @@ thirdDateTime:
       'click',
       async function() {
 
-        if (!reservationData) {
+        if (!reservationData || reservationSaved || submissionInProgress) {
           return;
         }
+
+        submissionInProgress = true;
 
 
         confirmError.classList.remove('show');
@@ -1131,6 +1177,8 @@ thirdDateTime:
             );
 
 
+          if (!response.ok) throw new Error('申込の送信に失敗しました。');
+
           const result =
             await response.json();
 
@@ -1144,8 +1192,10 @@ thirdDateTime:
           }
 
 
-          // 完了画面へ
+          // 保存成功を先に確定し、LINE送信失敗で申込を再送させない。
+          reservationSaved = true;
           showScreen(completeScreen);
+          await notifyReservationInLine(reservationData);
 
 
         } catch (error) {
@@ -1160,15 +1210,76 @@ thirdDateTime:
 
         } finally {
 
-          submitButton.disabled = false;
+          submissionInProgress = false;
+          submitButton.disabled = reservationSaved;
 
-          editButton.disabled = false;
+          editButton.disabled = reservationSaved;
 
           submitButton.textContent =
             '申し込む';
         }
       }
     );
+
+
+    function buildReservationLineMessage(data) {
+      const value = (text, limit) => String(text || '')
+        .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').slice(0, limit);
+      return [
+        '【船橋店】ポーカー体験会を申し込みました', '',
+        '代表者：' + value(data.representativeName, 200),
+        'ご来場人数：' + value(data.guestCount, 30), '',
+        '第1希望：' + value(data.firstDateTime, 100),
+        '第2希望：' + (value(data.secondDateTime, 100) || '指定なし'),
+        '第3希望：' + (value(data.thirdDateTime, 100) || '指定なし'), '',
+        '備考・ご質問：', value(data.note, 3500) || 'なし', '',
+        '※フォームから申込済みです。予約はまだ確定していません。',
+        '日程のご確認をお願いします。'
+      ].join('\n');
+    }
+
+    async function notifyReservationInLine(data) {
+      const status = document.getElementById('lineMessageStatus');
+      const fallback = document.getElementById('lineMessageFallback');
+      const text = buildReservationLineMessage(data);
+      document.getElementById('lineMessageText').value = text;
+      if (!canSendLineMessage || !document.getElementById('lineMessageConsent').checked) {
+        status.textContent = '申込は完了しています。LINEへのメッセージは自動送信していません。';
+        fallback.hidden = false;
+        return;
+      }
+      status.textContent = '申込は完了しました。LINEへ申込内容を送信しています…';
+      let timer;
+      try {
+        await Promise.race([
+          liff.sendMessages([{ type: 'text', text }]),
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error('LINE_SEND_TIMEOUT')), 15000);
+          })
+        ]);
+        status.textContent = 'LINEのトークへ申込内容を送信しました。';
+        fallback.hidden = true;
+      } catch (_) {
+        status.textContent = '申込は完了しています。LINEへの送信を確認できませんでした。トークに申込内容が届いていない場合だけ、下の文章を送信してください。';
+        fallback.hidden = false;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    document.getElementById('copyLineMessageButton').addEventListener('click', async function() {
+      const text = document.getElementById('lineMessageText');
+      const status = document.getElementById('copyLineMessageStatus');
+      try {
+        await navigator.clipboard.writeText(text.value);
+        status.textContent = 'コピーしました。船橋店の公式LINEへ貼り付けて送信してください。';
+      } catch (_) {
+        text.focus();
+        text.select();
+        text.setSelectionRange(0, text.value.length);
+        status.textContent = '文章を選択しました。長押し、またはコピー操作でコピーしてください。';
+      }
+    });
 
 
     // ----------------------------------
